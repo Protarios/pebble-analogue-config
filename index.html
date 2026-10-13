@@ -22,13 +22,15 @@ h1 { font-size: 20px; font-weight: 600; margin-bottom: 6px; }
 .color-dot { width: 14px; height: 14px; border-radius: 50%; flex-shrink: 0; }
 .card-label { font-size: 14px; font-weight: 500; flex: 1; }
 input[type="url"],
-input[type="text"] {
+input[type="text"],
+select {
   width: 100%; background: #1a1a1a; border: 1px solid #444; border-radius: 8px;
   color: #fff; font-size: 13px; padding: 10px 12px; outline: none;
   transition: border-color 0.15s;
 }
 input[type="url"]:focus,
-input[type="text"]:focus { border-color: #FF6600; }
+input[type="text"]:focus,
+select:focus { border-color: #FF6600; }
 input::placeholder { color: #555; }
 .field-label { font-size: 11px; color: #888; margin: 12px 0 6px; }
 .swatch-label { font-size: 11px; color: #888; margin: 12px 0 8px; }
@@ -146,7 +148,12 @@ input:checked + .slider:before { transform: translateX(20px); }
 
 <div class="section-title">Hour Hand</div>
 <div class="card">
-  <div class="card-header">
+  <label class="field-label" for="hourHandStyle">Hour hand style</label>
+  <select id="hourHandStyle">
+    <option value="0">Classic (original)</option>
+    <option value="1">Minimalin (bold)</option>
+  </select>
+  <div class="card-header" style="margin-top:14px">
     <div class="color-dot" id="dotHour" style="background:#FFFFFF"></div>
     <span class="card-label">Hour hand colour</span>
   </div>
@@ -155,7 +162,13 @@ input:checked + .slider:before { transform: translateX(20px); }
 
 <div class="section-title">Minute Hand</div>
 <div class="card">
-  <div class="card-header">
+  <label class="field-label" for="minuteHandStyle">Minute hand style</label>
+  <select id="minuteHandStyle">
+    <option value="0">Classic (original)</option>
+    <option value="1">Minimalin (bold)</option>
+    <option value="2">Minimalin Rainbow</option>
+  </select>
+  <div class="card-header" style="margin-top:14px">
     <div class="color-dot" id="dotMinute" style="background:#FFFFFF"></div>
     <span class="card-label">Minute hand colour</span>
   </div>
@@ -252,12 +265,6 @@ function selectMinuteColor(paletteIdx) {
   buildSwatches("swatchesMinute", paletteIdx, selectMinuteColor);
 }
 
-function selectHourColor(paletteIdx) {
-  selectedMinuteColor = paletteIdx;
-  document.getElementById("dotMinute").style.background = PALETTE[paletteIdx].hex;
-  buildSwatches("swatchesMinute", paletteIdx, selectHourColor);
-}
-
 // ── Load existing config ──────────────────────────────────────
 (function() {
   var params = new URLSearchParams(window.location.search);
@@ -274,6 +281,10 @@ function selectHourColor(paletteIdx) {
 		(config.overlayAboveHands === true);
 	  document.getElementById("batteryWarningOnly").checked =
 	    (config.batteryWarningOnly !== false);
+      if (config.hourHandStyle === 1) document.getElementById("hourHandStyle").value = "1";
+      if (config.minuteHandStyle === 1 || config.minuteHandStyle === 2) {
+        document.getElementById("minuteHandStyle").value = String(config.minuteHandStyle);
+      }
       if (typeof config.hourColor === "number") selectedHourColor = config.hourColor;
       document.getElementById("dotHour").style.background = PALETTE[selectedHourColor].hex;
       if (typeof config.minuteColor === "number") selectedMinuteColor = config.minuteColor;
@@ -309,6 +320,8 @@ function save() {
 	overlayAboveHands: document.getElementById("overlayAboveHands").checked,
     batteryWarningOnly:
       document.getElementById("batteryWarningOnly").checked,
+    hourHandStyle: Number(document.getElementById("hourHandStyle").value),
+    minuteHandStyle: Number(document.getElementById("minuteHandStyle").value),
     hourColor:     selectedHourColor,
 	minuteColor: selectedMinuteColor
   };
